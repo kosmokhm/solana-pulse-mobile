@@ -1,0 +1,10 @@
+gradle-*.zip
+.gradle/
+/build
+/.gradle
+/app/build
+.gradle
+local.properties
+.idea/
+*.iml
+.DS_Store
