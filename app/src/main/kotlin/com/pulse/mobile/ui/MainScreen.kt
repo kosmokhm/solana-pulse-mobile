@@ -13,12 +13,14 @@ import kotlinx.coroutines.launch
 import com.pulse.mobile.data.TokenManager
 import com.pulse.mobile.ui.feed.SocialFeedScreen
 import com.pulse.mobile.ui.map.MapScreen
+import com.pulse.mobile.ui.meme.MemeEditorScreen
 import com.pulse.mobile.ui.rewards.RewardsScreen
 
 enum class MainTab(val title: String, val icon: String) {
     MAP("Map", "🗺️"),
     REWARDS("Rewards", "🎁"),
-    FEED("SocialFi", "🌐")
+    FEED("SocialFi", "🌐"),
+    MEME("Memes", "🎨")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -109,9 +111,10 @@ fun MainScreen(connectWallet: suspend () -> Result<String>) {
                 .padding(paddingValues)
         ) {
             when (selectedTab) {
-                MainTab.MAP -> MapScreen()
+                MainTab.MAP     -> MapScreen()
                 MainTab.REWARDS -> RewardsScreen()
-                MainTab.FEED -> SocialFeedScreen()
+                MainTab.FEED    -> SocialFeedScreen()
+                MainTab.MEME    -> MemeEditorScreen()
             }
         }
     }

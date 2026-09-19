@@ -68,6 +68,29 @@ object TokenManager {
         return (baseReward * totalMultiplier).roundToInt()
     }
 
+    var totalMemes by mutableStateOf(0)
+        private set
+
+    // Нараховує $SKR за мінт мему залежно від Seeker Tier (базова винагорода 50 $SKR)
+    fun mintMemeReward(): Int {
+        val baseMemeReward = 50
+        val finalReward = calculateReward(baseMemeReward, currentTier, HotspotType.STANDARD)
+        balanceSkr += finalReward
+        userXp += 15
+        totalMemes += 1
+        return finalReward
+    }
+
+    // Нараховує чайові $SKR відправнику мему при натисканні "Tip $SKR"
+    fun tipMeme(amount: Int = 5): Boolean {
+        return if (balanceSkr >= amount) {
+            balanceSkr -= amount
+            true
+        } else {
+            false
+        }
+    }
+
     fun processCheckIn(baseReward: Int, hotspotType: HotspotType): RewardResult {
         val oldTier = currentTier
         val finalReward = calculateReward(baseReward, oldTier, hotspotType)

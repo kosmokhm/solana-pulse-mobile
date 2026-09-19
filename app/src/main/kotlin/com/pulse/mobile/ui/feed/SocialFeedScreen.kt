@@ -15,8 +15,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.pulse.mobile.data.TokenManager
+import com.pulse.mobile.ui.meme.MemeRepository
+import com.pulse.mobile.ui.meme.MintedMeme
 
 data class SocialFeedPost(
     val id: String,
@@ -42,7 +46,8 @@ fun SocialFeedScreen() {
     }
 
     var selectedFilter by remember { mutableStateOf("All Activity") }
-    val filters = listOf("All Activity", "Top Earners", "Hotspots")
+    val filters = listOf("All Activity", "Top Earners", "Hotspots", "Memes 🎨")
+    val memePosts = MemeRepository.mintedMemes
 
     Column(
         modifier = Modifier
@@ -84,8 +89,17 @@ fun SocialFeedScreen() {
             verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            items(posts, key = { it.id }) { post ->
-                FeedPostCard(post = post)
+            // Meme posts section
+            if (selectedFilter == "All Activity" || selectedFilter == "Memes 🎨") {
+                items(memePosts, key = { "meme_${it.timestamp}_${it.templateId}" }) { meme ->
+                    MemeFeedCard(meme = meme)
+                }
+            }
+            // Regular check-in posts
+            if (selectedFilter != "Memes 🎨") {
+                items(posts, key = { it.id }) { post ->
+                    FeedPostCard(post = post)
+                }
             }
         }
     }
@@ -217,6 +231,146 @@ fun FeedPostCard(post: SocialFeedPost) {
 
                 TextButton(onClick = { /* Boost action */ }) {
                     Text("🚀 Boost (+5 \$SKR)", fontSize = 12.sp)
+                }
+            }
+        }
+    }
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// MemeFeedCard – картка мему у SocialFi стрічці з кнопкою Tip $SKR
+// ──────────────────────────────────────────────────────────────────────────────
+@Composable
+fun MemeFeedCard(meme: MintedMeme) {
+    var tipCount by remember { mutableStateOf(0) }
+    var tipped    by remember { mutableStateOf(false) }
+    var tipError  by remember { mutableStateOf(false) }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF1A0F2E))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            // Badge
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = Color(0xFF9945FF).copy(alpha = 0.2f)
+                ) {
+                    Text(
+                        text = "🎨 MemePulse cNFT",
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        color = Color(0xFF9945FF),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Text(
+                    text = meme.timestamp,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF666688)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Meme canvas preview
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(160.dp)
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(Color(0xFF0D0D1A)),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth().padding(12.dp)
+                ) {
+                    if (meme.topText.isNotBlank()) {
+                        Text(
+                            text = meme.topText.uppercase(),
+                            color = Color.White,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 15.sp,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
+                    Text(meme.templateEmoji, fontSize = 52.sp)
+                    if (meme.bottomText.isNotBlank()) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = meme.bottomText.uppercase(),
+                            color = Color.White,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 15.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+                Text(
+                    text = "PulseMobile · Solana",
+                    modifier = Modifier.align(Alignment.BottomEnd).padding(8.dp),
+                    fontSize = 8.sp,
+                    color = Color.White.copy(alpha = 0.3f)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Reward + Tip row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = Color(0xFF14F195).copy(alpha = 0.15f)
+                ) {
+                    Text(
+                        text = "+${meme.skrReward} \$SKR minted",
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                        color = Color(0xFF14F195),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 12.sp
+                    )
+                }
+
+                // Tip $SKR button
+                Button(
+                    onClick = {
+                        val success = TokenManager.tipMeme(5)
+                        if (success) {
+                            tipCount++
+                            tipped = true
+                            tipError = false
+                        } else {
+                            tipError = true
+                        }
+                    },
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (tipped) Color(0xFF14F195).copy(alpha = 0.2f) else Color(0xFF9945FF)
+                    ),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Text(
+                        text = if (tipError) "❌ Недостатньо \$SKR" else "💜 Tip \$SKR${if (tipCount > 0) " ($tipCount)" else ""}",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (tipped) Color(0xFF14F195) else Color.White
+                    )
                 }
             }
         }
