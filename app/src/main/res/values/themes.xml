@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.PulseMobile" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">#080B16</item>
+        <item name="android:statusBarColor">#080B16</item>
+        <item name="android:navigationBarColor">#14192B</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>

@@ -1,0 +1,55 @@
+# Local caches, IDE state and machine configuration
+.gradle/
+.idea/
+**/build/
+local.properties
+*.iml
+.DS_Store
+Thumbs.db
+# Signing material and secrets
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.pem
+*.key
+.env
+.env.*
+!.env.example
+secrets.properties
+keystore.properties
+google-services.json
+# Local test artifacts; distribution requires separate review
+*.apk
+*.aab
+*.apks
+*.zip
+*.rar
+*.7z
+*.log
+*.mp4
+*.mov
+*.mkv
+*.webm
+/artifacts/
+# Private development evidence and device probes
+/*-baseline.txt
+/*-verification.json
+/ui[0-9]*-*.json
+/ui[0-9]*-*.png
+/ui[0-9]*-*.py
+/UI*_REPORT.md
+/IMPLEMENTATION_REPORT.md
+/DEMO_CHECKIN_REPORT.md
+/FINAL_DEMO_REPORT.md
+/HACKATHON_AUDIT.md
+/README.md.txt
+/adb
+/media/private/
+/media/video/*
+!/media/video/.gitkeep
+!/media/video/README.md
+
+/finalization-index-removals.txt
+/finalization-audit.py
+/finalization-audit.json

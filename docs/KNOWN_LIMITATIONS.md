@@ -1,0 +1,13 @@
+# Known limitations — UI07
+
+- **Local demo:** points, XP, tiers, daily bonus, receipts and meme rewards are not on-chain assets. No mint, transfer, SKR payout, live feed, deployed hotspot network or backend exists.
+- **Chooser after cold start:** saved token is used, but a new adapter launches a generic association intent. Provider metadata is saved; the integration cannot restore it into the pinned SDK's private routing field using a public setter. Selecting the same wallet restored Connected without another approval in the latest test. This does not guarantee invisible wallet UI or permanent consent.
+- **One MWA lifecycle FAIL:** an Activity finish/relaunch flow stalled. Delayed selection later reproduced failure after SDK transport failure. Timing/cleanup is the leading hypothesis, not proven fault assignment to Android, app or wallet. Prompt reconnect recovered without data clearing. No fix is included in finalization.
+- **Concurrency/cancellation:** controller-level protection exists, not a process-wide cross-controller arbiter. Cancellation is not joined before every replacement path. Actual simultaneous sessions were not demonstrated; the lifecycle risk is open. A coroutine timeout is not a hard wall-clock deadline if SDK cleanup blocks.
+- **GPS:** permissions and a usable precise fix are required; indoor conditions may block a claim. Accuracy must be <=30 m and distance plus accuracy <=100 m. Radar is schematic.
+- **Local safeguards:** protection lasts in this installation's local data. Uninstall/data clearing, tampering, root and clock manipulation are outside the trust model. There is no server anti-fraud or per-wallet reward identity.
+- **Meme content:** posts/likes are in memory and disappear on process death. Awarded points/XP/counters persist. Filters do not implement network rankings.
+- **Debug tools:** confirmed Reset clears demo data only. Never use it without the data owner's permission. Debug APKs are test artifacts, not production releases.
+- **Unverified device cases:** revocation/expiration, actual token rotation, key hardware attestation, backup migration and full recreation stress are not certified by mocks.
+- **Publication provenance:** this public-preparation copy is exported from the reviewed UI07 source commit and starts a separate clean history. The original workspace and its private historical artifacts are excluded. Existing GitHub history still requires a separate owner decision before publication; this task does not alter it.
+- **Media/license:** safe screenshots/video and an explicit project license are pending. No new Seeker captures were possible during finalization because ADB listed no devices.
